@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+<br>
+<div  class="shadow-sm rounded mb-4 p-4" style="background-color: white;" >
+    <div class="col-12 text-center" > 
+        <h2>
+            {% translate 'Booking Appontment' %}
+        </h2>
+        <h3>
+          {% translate 'Dr.'%} {{doctor.user.get_full_name}}
+      </h3>
+        
+   </div>
+   
+   <form action="{% url 'book_appointment' doctor.user.id  %}" method="post">
+        <div class="row m-5 justify-content-center">
+            <h3>{%translate 'Date'%} :</h3>
+            <div class="col-5">
+              <div class="input-group date" id="date">
+                <input type="text" class="form-control" name="adate" readonly="readonly"  id="datepicker" onchange='get_appointment("{{doctor.user.id}}", this.value)'/>
+                <span class="input-group-append">
+                  <button class="input-group-text bg-light d-block "  type = 'button'  onclick="document.getElementById('datepicker').focus()" >
+                    <i class="fa fa-calendar"></i>
+                  </button>
+                </span>
+              </div>
+            </div>
+        </div>
+
+       
+            {% csrf_token %}
+        <div class="row m-5 justify-content-center">
+            <h3>{%translate 'Time'%} :</h3>
+                
+            <div id="time"  class="row row-cols-3 gy-4 btn-group mb-4" role="group" aria-label="Basic radio toggle button group">
+            </div>
+        <input type="time" hidden name="time_from" id="from">
+        <input type="time" hidden  name="time_to"  id="to">
+        <input type="submit" class='btn btn-primary' value="Book">
+   
+        
+		</div>
+    </form>
+
+            <script>
+              
+            moment.locale('{{language_code}}');
+             function disableHoliday(date) {
+            
+                var string = $.datepicker.formatDate('yy-mm-dd', date);
+                
+                var filterDate = new Date(string);
+                var day = filterDate.getDay();
+                var bool=false;
+                '{% for o in off_day%}'
+                 
+                   
+                bool = (day=='{{o.value}}' || bool)
+                   
+                '{% endfor%}'
+                
+                return [bool]
+             }
+                    
+             $( "#datepicker" ).datepicker({
+                dateFormat: "yy-mm-dd",
+                minDate: 0,
+                beforeShowDay: disableHoliday
+                
+             });
+            
+             
+        function get_appointment(doctor,date){
+          
+            fetch('/get_appointment/'+ doctor +"/"+ date,{
+                headers:{
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                },
+            })
+            
+            .then(response => response.json() )
+            .then(data => {
+                let optionHTML='' 
+                let counter=1
+                if (data.available_appointment==0){
+                  optionHTML+= " <div class='alert alert-warning text-center' role='alert'>"+
+                        "Doctor have not any available appoitment at this day "+
+                        "</div>"
+                        $('#time').removeClass('row-cols-3', 'gy-4').html(optionHTML)
+                }
+                else {
+                  for(let a of data.available_appointment)
+                   {
+                     optionHTML+= "<div class='col' style='text-align: center;'> "+
+                        "<input type='radio' class='btn-check '  name='app_time' onclick=hi('"+a.start+"','"+a.end+"') id='btnradio"+counter+"' autocomplete='off' >"+
+                        "<label class='btn btn-outline-primary' for='btnradio"+counter+"'>{% translate 'From' %} " +  moment(a.start,'h:mm:ss').format('h:mm a') +" {%translate 'to'%} "+moment(a.end,'h:mm:ss').format('h:mm a')+"</label>"+
+                        "</div>";
+                      counter++
+                   }
+                   $('#time').html(optionHTML)
+                }
+               
+                  
+                });
+        }
+        
+       function hi(s,e) {
+            document.getElementById('from').value=s;
+            document.getElementById('to').value=e;
+        };
+		</script>
+        
+
+        {% endblock %}

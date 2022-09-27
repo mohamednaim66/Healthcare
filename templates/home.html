@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+
+  
+    
+    <div style="text-align: center; margin-top: 20px;" class="container" >
+        <H1 style="padding-bottom: 20px;" > <i class="bi bi-calendar2-week"></i>  {% translate 'Book a Doctor'%}</H1> 
+        <form   action="{% url 'doctors' %}" method="GET">
+
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-3 p-1">
+              <div class="input-group ">
+          
+                  <select name="Specialist" class="form-select" id="Specialist" aria-label="Example select with button addon">
+                  <option selected value="0">{% translate 'Select Specialist'%}</option>
+                  {% for specialty in Specialties %}
+                  <option value={{specialty.id}}>{{specialty.name}}</option>
+                  {% endfor %}
+                  </select>
+              </div>
+          </div>
+          <div class="col-md-2 p-1">
+              <div class="input-group  ">
+          
+                  <select id="city" name="city" class="form-select" aria-label="Example select with button addon">
+                  <option selected value="0" >{% translate 'Select city'%}</option>
+                  {% for city in Cities %}
+                  <option value={{city.id}}>{{city.name}}</option>
+                  {% endfor %}
+                  </select>
+              </div>
+          </div>
+          <div class="col-md-2 p-1">
+              <div class="input-group ">
+          
+                  <select id="area" name="area" disabled value="0" class="form-select"  aria-label="Example select with button addon">
+                  <option value="-1" selected> {% translate 'Select area'%}</option>
+                  </select>
+              </div>
+          </div>
+  
+          <div class="col-md-4 p-1">
+              <div class="input-group ">
+          
+                 <input type="text" class="form-control" name="name" placeholder= "{% translate 'Or search by doctor name'%}" ></input>
+              </div>
+          </div>
+          <div class="col-md-1 p-1">
+            <input type="submit" class="btn btn-primary col" value=" {% translate 'Search'%} ">
+
+            
+              
+          </div>
+         
+     
+        
+        </div>
+      </form>
+        <hr class="my-5">
+      <div class="container text-center my-5">
+        <h2 class="font-weight-light mb-4">{% translate 'Choose from top Offers'%}</h2>
+        <div class="row mx-auto my-auto justify-content-center">
+            <div id="recipeCarousel" class="carousel slide"  >
+                <div class="carousel-inner" role="listbox">
+                  {% for offer in Offers %}
+                  <div class="carousel-item first {% if forloop.first %} active {% endif %}  ">
+                    <div class="col-md-3">
+                        <div class="card" style="height:  100%;" >
+                            <img class="card-img-top" src="{% static 'image/doctors-wallpapers.png' %}" alt="Card image cap">
+                            <div class="card-body">
+                              <h5 class="card-title" style="font-size: 1em;" >{{offer.title}}</h5>
+                              <p class="card-text"   >{{offer.info}}</p>
+                            </div>
+                            <div class="card-footer " style="background-color:white; border-top:none 50px">
+                              <p class="card-text" >{% translate 'Doctor' %}: {{offer.doctor.get_full_name}}</p>
+                            </div>
+                            <div class="card-footer " style="background-color:white; border-top:none">
+                            <p class="card-text" >{% translate 'Price'%} :{{offer.start_price}}</p>
+                          </div>
+                            <div class="card-footer " style="background-color:white;
+                            border-top:none">
+                              <a href="#" class="btn btn-primary"  >{% translate 'Open'%}</a>
+                            </div>
+                             
+                          </div>
+                        </div>
+                </div>
+
+                  {% endfor %}
+             
+                </div>
+                <a class="carousel-control-prev bg-transparent w-aut" style="width: 0;" href="#recipeCarousel" role="button" data-bs-slide="prev">
+                    <span  aria-hidden="true"><i class="bi bi-caret-left-fill " style="color: black;  font-size: 30px;"></i></span>
+                </a>
+                <a class="carousel-control-next bg-transparent w-aut" style="width: 0;" href="#recipeCarousel" role="button" data-bs-slide="next">
+                    <span  aria-hidden="true"><i class="bi bi-caret-right-fill " style="color: black;  font-size: 30px;"></i></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <hr class="my-5">
+    <div class="container text-center my-5">
+        <h2 class="font-weight-light mb-4"> {% translate 'Book from top Specialist'%}</h2>
+        <div class="row mx-auto my-auto justify-content-center">
+            <div id="recipeCarousel2" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner" role="listbox">
+                  {% for specialist in Specialties %}
+                  <div class="carousel-item  {% if forloop.first %} active {% endif %} second  ">
+                    <div class="col-md-3">
+                        <div class="card" >
+                            <img class="card-img-top" src="{{specialist.image.url}}" style="height:200px" alt="Card image cap">
+                            <div class="card-body">
+                              <h5 class="card-title">{{specialist.name}}</h5>
+                              <p class="card-text"></p>
+                              <a href="#" class="btn btn-primary">{% translate 'Open'%}</a>
+                            </div>
+                          </div>
+                        </div>
+                  
+                  </div>
+                 
+                  {% endfor %} 
+               
+                   
+                </div>
+                <a class="carousel-control-prev bg-transparent w-aut" style="width: 0;" href="#recipeCarousel2" role="button" data-bs-slide="prev">
+                    <span  aria-hidden="true"><i class="bi bi-caret-left-fill " style="color: black;  font-size: 30px;"></i></span>
+                </a>
+                <a class="carousel-control-next bg-transparent w-aut" style="width: 0;" href="#recipeCarousel2" role="button" data-bs-slide="next">
+                    <span  aria-hidden="true"><i class="bi bi-caret-right-fill " style="color: black;  font-size: 30px;"></i></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+  
+    <div  style="text-align: center; background-color:#0d6efd ; color: white; border-radius: 10px ;"><h1>{% translate 'Healthcare Articles and News'%}</h1></div>
+    <!-- start sw-rss-feed code --> 
+<script type="text/javascript"> 
+   
+    rssfeed_url = new Array(); 
+    rssfeed_url[0]="https://www.hospitalhealth.com.au/feed.rss";  
+    rssfeed_frame_width="100%"; 
+    rssfeed_frame_height="1300px"; 
+    rssfeed_scroll="off"; 
+    rssfeed_scroll_step="0"; 
+    rssfeed_scroll_bar="on"; 
+    rssfeed_target="_blank"; 
+    rssfeed_font_size="25"; 
+    rssfeed_font_face=""; 
+    rssfeed_border="off"; 
+    rssfeed_css_url=""; 
+    rssfeed_title="of"; 
+    rssfeed_title_name="Healthcare Articles and News"; 
+    rssfeed_title_bgcolor="#3366ff"; 
+    rssfeed_title_color="#fff"; 
+    rssfeed_title_bgimage=""; 
+    rssfeed_footer="off"; 
+    rssfeed_footer_name="rss feed"; 
+    rssfeed_footer_bgcolor="#fff"; 
+    rssfeed_footer_color="#333"; 
+    rssfeed_footer_bgimage=""; 
+    rssfeed_item_title_length="100"; 
+    rssfeed_item_title_color="#666"; 
+    rssfeed_item_bgcolor="#fff"; 
+    rssfeed_item_bgimage=""; 
+    rssfeed_item_border_bottom="on"; 
+    rssfeed_item_source_icon="off"; 
+    rssfeed_item_date="on"; 
+    rssfeed_item_description="on"; 
+    rssfeed_item_description_length="600"; 
+    rssfeed_item_description_color="#666"; 
+    rssfeed_item_description_link_color="#55a0ff"; 
+    rssfeed_item_description_tag="off"; 
+    rssfeed_no_items="5"; 
+    rssfeed_cache = "18a2e42b3846ea9dcea6390755ca5841"; 
+
+    </script> 
+    <script type="text/javascript" src="//feed.surfing-waves.com/js/rss-feed.js"></script> 
+    <!-- The link below helps keep this service FREE, and helps other people find the SW widget. Please be cool and keep it! Thanks. --> 
+   
+    <div class="my-5" id="map" style="height: 426px;">
+    </div>
+    
+    <script
+    
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0S5u130Cv5QbnS7RoA_QZpT6TxPrETow&callback=initMap&v=weekly"
+    async
+  ></script>
+ 
+    <script type="text/javascript">
+    
+      let items1 = document.querySelectorAll('.carousel .carousel-item.first')
+    
+    items1.forEach((el1) => {
+        
+        const minPerSlide1 = 4
+        let next1 = el1.nextElementSibling
+        for (var i=1; i<minPerSlide1; i++) {
+            if (!next1) {
+                // wrap carousel by using first child
+                next1 = items1[0]
+              }
+            let cloneChild1 = next1.cloneNode(true)
+            el1.appendChild(cloneChild1.children[0])
+            next1 = next1.nextElementSibling
+        }
+    })
+    
+    let items2 = document.querySelectorAll('.carousel .carousel-item.second')
+    
+    items2.forEach((el2) => {
+        
+        const minPerSlide2 = 4
+        let next2 = el2.nextElementSibling
+        for (var i=1; i<minPerSlide2; i++) {
+            if (!next2) {
+                // wrap carousel by using first child
+                next2 = items2[0]
+              }
+            let cloneChild2 = next2.cloneNode(true)
+            el2.appendChild(cloneChild2.children[0])
+            next2 = next2.nextElementSibling
+        }
+    })
+    </script>
+
+    
+<script type="text/javascript">
+  // Initialize and add the map
+  function initMap() {
+    // The location of Uluru
+    var lat1 =24.758
+    var lang1 = 46.642
+    const uluru = { lat:lat1  , lng:lang1};
+    // The map, centered at Uluru
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 15,
+      center: uluru,
+    });
+    // The marker, positioned at Uluru
+    const marker = new google.maps.Marker({
+      position: uluru,
+      map: map,
+      title: "Healthcare office"
+    });
+  }
+
+  function selectload (){
+  var value = $('#city').val();
+     console.log(value)
+     if (value==0) {
+ 
+       $('#area').attr('disabled','disabled');
+       
+     }
+     else{
+       $('#area').removeAttr("disabled");
+       $('#area').val(0)
+       fetch('/get_modelAPI/'+ value,{
+     headers:{
+         'Accept': 'application/json',
+         'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+     },
+ })
+      .then(response => response.json() )
+      .then(data => {
+      let optionHTML = "<option  selected value = 0 >{% translate 'Select area'%}</option>";
+      for(let carea of data)
+         {
+           optionHTML+='<option value="'+carea.fields.id+'">'+carea.fields.name+'</option>'
+         }
+         $('#area').html(optionHTML)
+      });
+     }
+    
+ }
+ 
+ $(document).ready(selectload);
+ 
+ $("#city").change(selectload);
+
+ 
+ 
+  </script>
+  
+    
+{% endblock  %}

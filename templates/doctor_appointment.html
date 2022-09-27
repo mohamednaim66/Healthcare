@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+
+<br>
+
+<input id="position" type="hidden" name="position" value=0>
+
+<div class="shadow-sm rounded mb-4 p-4" style="background-color: white;">
+    <h2 class="text-center mb-3"> {% translate "My Appointments" %}</h2>
+
+
+
+    {% if language_code == 'ar' %}
+
+    <div class="container-fluid mt-5" style="overflow: auto;" dir="rtl">
+
+        {% elif language_code == 'en' %}
+
+        <div class="container-fluid mt-5" style="overflow: auto;" dir="ltr">
+
+            {% endif %}
+
+            {% if doctor_appointments %}
+
+
+            <table id="HAppointmentTable" class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>{% translate "Patient" %}</th>
+                        <th>{% translate "Phone Number" %}</th>
+                        <th>{% translate "Date" %}</th>
+                        <th>{% translate "From" %}</th>
+                        <th>{% translate "To" %}</th>
+                        <th>{% translate "Status" %}</th>
+                        <th class="th_action th_action-sm">{% translate "Action" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody id='appointmentTable'>
+
+                    {% for doctor_appointment in doctor_appointments %}
+
+                    <tr>
+                       
+                        <td >
+                            <a class="patient_link" href="{% url 'patient_file' doctor_appointment.patient.user.id %}">
+                                {{doctor_appointment.patient.user.get_full_name}}
+                            </a>
+                        </td>
+                        <td>
+                            {{doctor_appointment.patient.PhoneNum}}
+                        </td>
+                        <td>
+                            {{doctor_appointment.adate}}
+                        </td>
+                        <td>
+                            {{doctor_appointment.time_from|time:'h:i A'}}
+                        </td>
+                        <td>
+                            {{doctor_appointment.time_to|time:'h:i A'}}
+
+                        </td>
+                        <td>
+                            {{doctor_appointment.get_status_display}}
+                        </td>
+                        <td >
+                            {% if doctor_appointment.status == 2 %}
+
+                            <form action="{% url 'doctor_appointment' %}" method="post"
+                                onsubmit=" set_position('#position{{doctor_appointment.id}}', this)">
+                                <input type="hidden" name="_method" value="PUT">
+                                <input type="hidden" name="id" value={{ doctor_appointment.id }}>
+                                <input id="position{{doctor_appointment.id}}" type="hidden" name="position" value=0>
+
+                                <div >
+                                    <div class="row">
+                                        <div class="col-md-6">
+
+                                            {% csrf_token %}
+
+                                          
+                                            <button type="submit"  style="display: flex; justify-content: center;" value="Reject" name="status" class='btn btn-danger col-12' >
+                                                {% translate "Reject" %}
+                                            </button>
+
+
+
+                                        </div>
+                                        <div class="col-md-6">
+
+                                            {% csrf_token %}
+                                            <button type="submit" value="Accept" style="display: flex; justify-content: center;" name="status" class='btn btn-success col-12'>
+                                                {% translate "Accept" %}
+                                        </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            {% elif doctor_appointment.status == 1  %}
+                            <div >
+                                <div class="row ">
+                                    <div class="col-md-6 col-12">
+                                        <button  class="btn btn-danger col-12 "  data-bs-toggle="modal" data-bs-target="#attendedModal" >{% translate "Not attended" %}</button>
+                                    </div>
+
+                                    <!-- Button trigger modal -->
+                                    <div class="col-md-6 col-12">
+                                      
+                                        <a  href="{% url 'attendace' doctor_appointment.id %}"  class="btn btn-success col-12"  >{% translate "Attended" %}</a>
+                                    </div>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="attendedModal" tabindex="-1" aria-labelledby="attendedModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="attendedModalLabel">{% translate "Confirmation" %}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {% translate "Please confirm that the patient did not attend" %}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form action="{% url 'doctor_appointment' %}" method="post"
+                                                onsubmit=" set_position('#position{{doctor_appointment.id}}',this)">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="_method" value="PUT">
+                                                    <input type="hidden" name="id" value={{ doctor_appointment.id }}>
+                                                    <input id="position{{doctor_appointment.id}}" type="hidden" name="position" value=0>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Close" %}</button>
+                                                    <button type="submit" class="btn btn-primary" value="not_attended" name="status" >{% translate "Confirm" %}</button>
+                                                </form>
+                                            </div>
+                                        
+                                        </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                   
+
+
+
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <h4 class="text-center mb-3" style="color: rgb(132, 132, 132);">{% translate "There is no appointment yet"%}</h4>
+
+
+            {% endif %}
+        </div>
+
+        {% if language_code == 'ar' %}
+        <script>
+        var table;
+
+            $(document).ready(function () {
+                table = $('#HAppointmentTable').DataTable(
+                    {
+                        "language": {
+                            "infoFiltered": "(تم تصفيته من  _MAX_ إجمالي المواعيد)",
+                            "info": "إظهار _START_ إلى _END_ من _TOTAL_ مواعيد",
+                            "infoEmpty": "إظهار 0 إلى 0 من 0 مواعيد",
+                            "zeroRecords": "لا يوجد بيانات متطابقة ",
+                            "emptyTable": "لا يوجد بيانات في الجدول",
+                            "lengthMenu": "إظهار _MENU_ من المواعيد ",
+                            "loadingRecords": "تحميل...",
+                            "processing": "",
+                            "search": "ابحث :",
+                            "paginate": {
+                                "first": "الأولى »",
+                                "last": "« الأخيرة",
+                                "next": "التالي",
+                                "previous": "السابق"
+                            },
+                        }
+                    }
+                );
+             
+
+            });
+        </script>
+
+        {% else %}
+        <script>
+            $(document).ready(function () {
+                table = $('#HAppointmentTable').DataTable();
+                
+              
+            });
+
+        </script>
+        {% endif %}
+
+        <script type="text/javascript">         
+               const parser = new DOMParser();
+
+            function set_position(id,m) {
+            
+                $(id).val($('#position').val())
+                var element = document.createElement('input');
+                element.type = 'hidden';
+                element.value =  table.page.info()['page'];
+                element.name = 'page';
+                m.append(element)
+                
+            }
+
+            $(document).ready(function () {
+              
+                table.page({{page}}).draw('page');
+              
+                '{% if not position == 0  %}'
+                
+                setTimeout(() => $('html, body').animate({
+                    scrollTop: '{{position}}' 
+                }, 800), 100)
+
+                '{% endif %}'
+
+
+
+            });
+
+            let lastKnownScrollPosition = 0;
+            let ticking = false;
+
+            function to_input(scrollPos) {
+                $('#position').val(scrollPos)
+            }
+
+            document.addEventListener('scroll', function (e) {
+                lastKnownScrollPosition = window.scrollY;
+
+                if (!ticking) {
+                    window.requestAnimationFrame(function () {
+                        to_input(lastKnownScrollPosition);
+                        ticking = false;
+                    });
+
+                    ticking = true;
+                }
+            });  
+        </script>
+
+        {% endblock %}

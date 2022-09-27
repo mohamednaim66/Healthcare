@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+
+<br>
+
+
+<div class="shadow-sm rounded mb-4 p-4" style="background-color: white;">
+    <h2 class="text-center mb-3"> {% translate "Appointment Information" %}</h2>
+
+
+
+
+    <form action="{% url 'attendace' appointment_id %}" method='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% for field in form %}
+
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">
+                {{field.label_tag}}
+            </label>
+            {{field}}
+        </div>
+        {% endfor %}
+
+        <div class="row justify-content-center ">
+            <div class="col-6">
+                <input class="btn btn-primary col-12" type="submit" value="{% translate 'Save' %}">
+
+            </div>
+            <div class="col-6">
+                <a href="{% url 'doctor_appointment' %}" class="btn btn-warning col-12 ">{% translate "Back" %}</a>
+            </div>
+           
+        </div>
+    </form>
+
+</div>
+
+
+
+
+
+
+
+{% endblock %}

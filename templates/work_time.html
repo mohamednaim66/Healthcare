@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load extra_filter %}
+{% block content %}
+<br>
+
+<div class="shadow-sm rounded mb-4 p-4" style="background-color: white;" > 
+    <h2 class="text-center mb-3"> {% translate 'Work Time' %}</h2>
+    <h5>
+        {% translate 'work days' %} :
+
+    </h5>
+    <form action="{% url 'work_time' %}" method="POST">
+        {% csrf_token %}
+        <div class="row gx-2 mt-3 ">
+    
+            {% for offday,v in off_days.items %}
+    
+            <div class="col">
+                <input class="form-check-input" name='off_day' value= '{{ offday|dayVal }}' type="checkbox" id="{{offday}}">
+                <label class="form-check-label" for="{{offday}}">{{ offday|dayStr }}</label>
+            </div>
+    
+    
+            {% endfor %}
+    
+        </div>
+    
+        <div class="row">
+            <div class="mb-3 col-6 ">
+                <label class="form-label">
+                    <h5 class="text-center mt-3"> {% translate 'Start Time' %} :</h5>
+                </label>
+                <input type="time" class="form-control" name="start_time" id="start_time">
+            </div>
+    
+            <div class="mb-3 col-6 ">
+                <label class="form-label">
+                    <h5 class="text-center mt-3"> {% translate 'End Time' %} :</h5>
+                </label>
+                <input type="time" class="form-control" name="end_time" id="end_time">
+            </div>
+    
+    
+    
+        </div>
+    
+        <div class="row px-2">
+            <button type="submit" class="btn btn-primary col-12"> {% translate 'save' %} </button>
+        </div>
+    
+    
+    </form>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            off_day = JSON.parse('{{JS_off_days|safe}}');
+            for (o in off_day) {
+                document.getElementById(o).checked = off_day[o]
+            }
+
+            document.getElementById('start_time').value = '{{start_time|date:"H:i"}}'
+            document.getElementById('end_time').value = '{{end_time|date:"H:i"}}'
+        }
+        )
+    </script>
+    {% endblock %}

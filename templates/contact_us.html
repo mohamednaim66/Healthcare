@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load i18n %}
+
+<br>
+<div class="container shadow p-4 mb-5 bg-body rounded" >
+    <div class="mb-4 text-center" >
+      <h1>
+        {% translate 'ContactUs' %}
+      </h1>
+  </div>
+    <form  action="{% url 'contact_us'%}" method="POST">
+    {%csrf_token%}
+    {% for field in form %}
+    
+  
+   
+    <div class="mb-3">
+      <label for="exampleInputEmail1" class="form-label">{{field.label}}</label>
+      {{field}}
+      {% if field.errors %}
+      <div class="alert alert-danger d-flex align-items-center" role="alert">
+     
+        <div>
+          {{ field.errors}}
+        </div>
+      </div>
+      {% else %}
+  
+      <div id="emailHelp" class="form-text">{{field.help_text}}</div>
+      
+      {% endif %}
+    </div>
+     
+  
+  {% endfor %}
+    
+  
+  <div class="d-flex justify-content-center  mt-5">
+    <input type="submit" class="btn btn-primary col" value="{% translate 'Send'%} ">
+  </div>
+  </form>
+    
+      
+  </div>
+  <div class="container shadow p-4 mb-5 bg-body rounded" >
+    <div class="mb-4 text-center" >
+        <h1>
+          {% translate 'Contact Information'%}
+        </h1>
+    </div>
+   <h4>{% translate 'Call Us'%} :</h4>
+   <h6 style="padding-inline-start :80px ;"> 011-653-2534</h6>
+   <h4>{% translate 'Address'%} :</h4>
+   <h6 style="padding-inline-start :80px ;">some place  </h6> 
+   <h4>{%translate 'Mail Us'%} :</h4>
+   <h6 style="padding-inline-start :80px ;">e-Healthcare.gmail.com</h6>
+      
+  </div>
+
+{% endblock  %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+
+<div class="contianer d-flex justify-content-center">
+    {% if next %}
+    <form style="margin-top: 100px; "  novalidate class="col-md-6 col-lg-4  " action="{% url 'login'%}?next={{next}}" method="POST" >
+    {% else %}
+    <form style="margin-top: 100px; "  novalidate class="col-md-6 col-lg-4 " action="{% url 'login'%}" method="POST" >
+    {% endif %}
+        {% csrf_token %}
+        <div class="mb-4 text-center" >
+            <h1>
+                {% translate 'Login'%}
+            </h1>
+        </div>
+        <!-- Username input -->
+        <div class=" mb-4">
+            <label class="form-label" for="username">{% translate 'Username'%}</label>
+            <input type="username" placeholder={% translate 'Username'%} name="username" id="username" class="form-control"  />
+          
+        </div>
+      
+        <!-- Password input -->
+        <div class=" mb-4">
+            <label class="form-label" for="password">{%translate 'Password'%}</label>
+            <input type="password" placeholder={% translate 'Password'%} name="password" id="password" class="form-control"  />
+          
+        </div>
+    
+        <!-- 2 column grid layout for inline styling -->
+        <div class="row mb-4">
+          <div class="col d-flex p-2 justify-content-center">
+            <!-- Checkbox -->
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name= "rememberMe" value="True" id="rememberMe" checked />
+              <label class="form-check-label" for="rememberMe">{% translate 'Remember me'%} </label>
+            </div>
+          </div>
+      
+          <div class="col d-flex p justify-content-center">
+            <!-- Simple link -->
+            <a class="login-link" href="#!">{% translate 'Forgot password?'%}</a>
+          </div>
+        </div>
+      
+        <!-- Submit button -->
+        <div class="d-grid mb-4">
+            <button type="submit"  class="btn btn-primary ">{% translate 'Login'%}</button>
+        </div>
+       
+        <!-- Register buttons -->
+        <div class="text-center">
+          <p>{% translate 'Not a member? '%}<a class="login-link" href="{% url 'register' %}">{% translate 'Register now'%}</a></p>
+        </div>
+    </form>
+    
+</div>
+
+<script type="text/javascript">
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+  
+  {% endblock  %}

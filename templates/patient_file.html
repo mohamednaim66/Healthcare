@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="shadow-sm rounded mb-4" style="background-color: white;" >
+<div class="row ">
+    <div class="col-md-4 text-center" > 
+        <img src="{{ patient.image_profile.url }}" class="card-img-top  m-3" style="border: 3px solid black; max-height: 300px; max-width: 300px;" alt="">                 
+    </div>
+    <div class="col-md-5  align-self-center text-center" > 
+        <h2>
+          {% if request.user.id == patient.user.id  %}
+            {% translate 'My Information' %}
+          {% else %}
+            {% translate 'Patient Information' %}
+          {% endif %}
+
+        </h2>
+        
+   </div>
+   
+   {% if request.user.id == patient.user.id  %}
+   <div class="col-md-3  align-self-end text-center pb-3" > 
+    <a href= "{% url 'patient_appointments'%}" class='btn btn-primary' >
+      {% translate "My appointment" %}
+    </a>
+  </div>
+
+   {% endif %}
+   
+
+</div>
+
+<div class=" row ms-4 me-4" style="border-top: 1px solid #8e898945;">
+<div class="mb-3 col-md-6  ">
+    <label for="staticEmail" class="col col-form-label">{% translate "First Name" %} :</label>
+    <div class="col">
+      <input type="text" readonly class="form-control" id="staticEmail" value=" {{patient.user.first_name}}">
+    </div>
+  </div>
+  <div class="mb-3 col-md-6 ">
+    <label for="staticEmail" class="col col-form-label">{% translate "Last Name" %} :</label>
+    <div class="col">
+      <input type="text" readonly class="form-control" id="staticEmail" value=" {{patient.user.last_name}}">
+    </div>
+  </div>
+  </div>
+  
+<div class=" row ms-4 me-4">
+    <div class="mb-3 col-md-6  ">
+        <label for="staticEmail" class="col col-form-label">{% translate "Email" %} :</label>
+        <div class="col">
+          <input type="text" readonly class="form-control" id="staticEmail" value=" {{patient.user.email}}">
+        </div>
+      </div>
+      <div class="mb-3 col-md-6 ">
+        <label for="staticEmail" class="col col-form-label">{% translate "Phone Number" %} :</label>
+        <div class="col">
+          <input type="text" readonly class="form-control " id="staticEmail" value=" {{patient.PhoneNum}}">
+        </div>
+      </div>
+      </div>
+
+      <div class="mb-3 row ms-4 me-4" style="border-bottom: 1px solid #8e898945;">
+        <div class="mb-3 col-sm-3  col-12  ">
+            <label for="staticEmail" class="col col-form-label">{% translate "Gender" %}:</label>
+            <div class="col">
+              <input type="text" readonly class="form-control text-center" id="staticEmail" value=" {{patient.gender}}">
+            </div>
+          </div>
+          <div class="mb-3 col-8 col-sm-6">
+            <label for="staticEmail" class="col col-form-label">{% translate "Birth Date" %} :</label>
+            <div class="col">
+              <input type="text" readonly class="form-control text-center" id="staticEmail" value=" {{patient.birth_date|date:'Y \\\ m \\\ d'}}">
+            </div>
+          </div>
+          <div class="mb-3 col-4 col-sm-3 ">
+            <label for="staticEmail" class="col col-form-label">{% translate "age" %} :</label>
+            <div class="col">
+              <input type="text" readonly class="form-control text-center" id="staticEmail" value=" {{patient.age}}">
+            </div>
+          </div>
+          </div>
+          {% if PCCs %}
+          <div class="mb-3 row ms-4 me-4"  style ="border-bottom: 1px solid #8e898945;" >
+            <h2 style="margin-bottom: 20px">{% translate "Patient Chronic Conditions" %}</h2>
+            {% for PCC in PCCs  %}
+          
+            
+            <div class="mb-3 col-4  ">
+                <div class="col">
+                  <input type="text" readonly class="form-control text-center" id="staticEmail" value="{{PCC.name}}">
+                </div>
+              </div> 
+           
+           {% endfor %}
+          
+            
+            </div>
+          
+            {% else %}
+            <div class="mb-3 row ms-4 me-4 justify-content-center" style ="border-bottom: 1px solid #8e898945;" >
+                <h2 style="margin-bottom: 20px">{% translate "Patient Chronic Conditions" %}</h2>
+              <div class="mb-3 col  ">
+                  <div class="col">
+                    <input type="text" readonly class="form-control text-center" id="staticEmail" value="{% translate 'there is no Chronic Conditions' %}">
+                  </div>
+                </div>
+                
+                </div>
+            {% endif %}
+
+          
+
+            <div class=' row ms-4 me-4'>
+              <h2 style="margin-bottom: 20px">{% translate "Patient History" %} </h2>
+              <div class="container-fluid mb-3" style="overflow: auto;" > 
+              <div class="col mb-3"> 
+                {% if patient_registers %}
+                <table class="table" id="HAppointmentTable">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">{%translate 'Doctor'%}</th>
+                      <th scope="col" >{%translate "Doctor's specialty"%}</th>
+                      <th scope="col">{% translate 'Type'%}</th>
+                      <th scope="col">{% translate 'Discrption' %}</th>
+                      <th scope="col">{% translate 'Date' %}</th>
+                      <th scope="col">{% translate "File" %}</th>
+    
+                    </tr>
+                  </thead>
+                  <tbody class="table-group-divider">
+                 
+                    {% for patient_register in patient_registers %}
+                    <tr>
+                      <th >{{patient_register.id}}</th>
+                      <td  style="min-width: 150px;">{{patient_register.doctor.user.get_full_name}}</td>
+                      <td  style="min-width: 200px;">{{patient_register.doctor.specialty}}</td>
+                      <td  style="min-width: 150px;" >{{patient_register.type}}</td>
+                      <td style="min-width: 500px;">{{patient_register.discrption}}</td>
+                      <td style="min-width: 150px;">{{patient_register.register_date|date:"Y-M-d h:m(A)"}}</td>
+                      <td><a href="{{patient_register.file.url}}" rel="noopener noreferrer" target="_blank" style="text-align:start;">{%translate 'File'%}</a></td>
+                      
+                    </tr>
+                      
+                    
+                    {% endfor %}
+                   
+                  </tbody>
+                </table>
+                {% else %}
+                <h4 class="text-center mb-3" style="color: rgb(132, 132, 132);">{% translate "patient hasn't history yet" %}</h4>
+
+         
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+
+</div>
+
+{% if  language_code == 'ar' %}
+    <script>
+   
+
+    $(document).ready(function () {
+        $('#HAppointmentTable').DataTable(
+            {
+                "language": {
+                    "infoFiltered":   "(تم تصفيته من  _MAX_ إجمالي الحقول)",
+                    "info":           "إظهار _START_ إلى _END_ من _TOTAL_ حقول",
+                    "infoEmpty":      "إظهار 0 إلى 0 من 0 حقول",
+                    "zeroRecords":    "لا يوجد بيانات متطابقة ",
+                    "emptyTable":     "لا يوجد بيانات في الجدول",
+                    "lengthMenu":     "إظهار _MENU_ من الحقول ",
+                    "loadingRecords": "تحميل...",
+                    "processing":     "",
+                    "search":         "ابحث :",
+                    "paginate": {
+                        "first":      "الأولى »",
+                        "last":       "« الأخيرة",
+                        "next":       "التالي",
+                        "previous":   "السابق"
+                    },
+                }
+            }
+        );
+      
+      });
+         </script>
+
+      {% else %}
+      <script>
+      $(document).ready(function () {
+        $('#HAppointmentTable').DataTable();
+      
+      });
+   
+    </script>
+    {% endif %}
+
+{% endblock %}

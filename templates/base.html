@@ -1,0 +1,211 @@
+{% load static %}
+{% load i18n %}
+{% get_available_languages as LANGUAGES %}
+{% get_current_language as language_code %}
+{% get_language_info_list for LANGUAGES as languages %}
+
+<!DOCTYPE html>
+<html lang="en"  >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{% static 'css/main.css'  %}" rel="stylesheet"></link>
+  {%if  language_code ==  'ar'  %} 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.rtl.min.css" integrity="sha384-gXt9imSW0VcJVHezoNQsP+TNrjYXoGcrqBZJpry9zJt8PCQjobwmhMGaDHTASo9N" crossorigin="anonymous">
+  
+  {% else %} 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  {%endif%} 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src={% static 'js/moment.min.js' %}></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+  <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+  <link href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css" rel="stylesheet" >
+
+ 
+</head>
+
+
+<body style='background-color: #f1f3f5;'>
+  
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm  container-fluid">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home'%}">
+    
+          <img src="{% static 'image/e.png' %}" alt="" width="30" height="30" class="d-inline-block align-text-top">  
+      e-Healthcare </a>
+      
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+  
+  <div class="collapse navbar-collapse" id="navbarSupportedContent"  >
+      <ul class="navbar-nav {%if language_code == 'ar' %} me-auto {% else %} ms-auto {% endif %}  mb-2 mb-lg-0" >
+        
+        {% if not request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link "  href="{% url 'register' %}">{% translate 'Register' %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nbar == 'login' %} active {% endif %}" href="{% url 'login' %}">{% translate 'Login' %}</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'doctors' %}">{% translate 'Doctors' %} </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'contact_us' %}">  {% translate 'ContactUs' %}</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#"  id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {% translate 'languages' %}
+            </a>
+            <ul class="dropdown-menu " aria-labelledby="navbarDropdown">
+              {% for lang in languages %}
+              <li><a class="dropdown-item" href="/{{lang.code}}{% if request.get_full_path|slice:':4' == '/ar/' or request.get_full_path|slice:':4' == '/en/' %}/{{request.get_full_path|slice:'4:'}} {% else %}{{request.get_full_path}}  {% endif %}">{{lang.name_local}}</a></li>
+              {% endfor %}
+            </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">  {% translate 'About' %} </a>
+        </li>
+       
+        {% if request.user.is_authenticated %}
+        {% if not userInfo.is_doctor and not request.user.is_superuser%}
+        <li class="nav-item">
+          
+          <a class="nav-link" href="{% url 'patient_file' %}">  {% translate 'My medical profile' %}</a>
+        </li>
+        {% elif userInfo.is_doctor and not request.user.is_superuser %}
+        <li class="nav-item">
+          
+          <a class="nav-link" href="{% url 'doctor_dashboard' %}">  {% translate 'dashboard' %} </a>
+        </li>
+        
+        {% endif %}
+       
+        
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">  {% translate 'Logout' %} </a>
+        </li>
+        {% endif %}
+
+      
+        
+      </ul>
+      
+     
+    </div>
+  </div>
+</nav>
+{% if request.get_full_path|slice:"4:" == "home" or request.get_full_path|slice:"1:" == "home"%}
+<div class="image-section">
+
+  <div class="image-section-content">
+    <p>
+      {% translate 'Healthcare for Better life all in one Place' %}
+    </p>
+    <p>
+      {% translate 'Join Us' %}
+    </p>
+    
+  </div>
+</div>
+{% endif %}
+
+{% if request.get_full_path|slice:"4:16" == "patient_file" or request.get_full_path|slice:"1:13" == "patient_file"%}
+<div class="image-section-2">
+
+  <div class="image-section-2-content">
+    <p>{% translate "Patient File" %}</p>
+    
+  </div>
+</div>
+{% elif request.get_full_path|slice:"4:20" == "doctor_dashboard" or request.get_full_path|slice:"1:17" == "doctor_dashboard"%}
+<div class="image-section-2">
+
+  <div class="image-section-2-content">
+    <p>{% translate "Doctor Dashboard" %}</p>
+    
+  </div>
+</div>
+{% endif %}
+
+{% if language_code ==  'ar' %}
+
+<div class="container-lg mt-5" dir="rtl"> 
+  
+
+
+{% elif language_code ==  'en' %}
+
+<div class="container-lg mt-5" dir="ltr"> 
+
+ 
+{% else %}
+
+<div class="container-lg mt-5" > 
+
+
+{% endif %}
+{% if upAppointment %}
+  {% if upAppointment != 0 %}
+  <div class="position-fixed bottom-0 end-0 p-3 "  style="z-index: 11">
+    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="false">
+      <div class="toast-header">
+        <strong class="me-auto">Reminder</strong>
+        <small>11 mins ago</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {% translate "You have" %} {{upAppointment}}  {% translate " upcoming appointments today" %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+{% endif %}
+
+
+{% if messages %}
+ <br>
+
+  {% for message in messages %}
+  <div  {% if message.tags %} class="alert alert-dismissible fade show alert-{{message.tags}}"{% endif %} role="alert1">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+      {% endfor %}
+  {% endif %}
+
+  {% block content %}
+  
+   
+  {% endblock %}
+  
+</div>
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+ 
+
+

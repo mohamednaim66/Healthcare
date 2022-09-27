@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+<br>
+
+<div class="shadow-sm rounded mb-4 p-4" style="background-color: white;" > 
+    <h2 class="text-center mb-3">{% translate "My Appointments" %}</h2>
+   
+    <a href= "{% url 'patient_appointments'%}?old=False" class='btn btn-success' >
+        {% translate "Upcoming appointments" %}
+      </a>
+    <a href= "{% url 'patient_appointments'%}?old=True" class='btn btn-warning' >
+        {% translate "Previous appointments" %}
+      </a>
+   
+{% if patient_appointments %}
+{% if language_code ==  'ar' %}
+
+<div class="container mt-5" dir="rtl"> 
+  
+{% elif language_code ==  'en' %}
+
+<div class="container mt-5" dir="ltr"> 
+
+{% endif %}
+
+<table id="HAppointmentTable" class="table table-hover table-striped" >
+    <thead>
+        <tr>
+            <th>{% translate "Doctor" %}</th>  
+            <th>{% translate "Specialty" %}</th> 
+            <th>{% translate "Address" %}</th>  
+            <th>{% translate "Date" %}</th>
+            <th>{% translate "From" %}</th>  
+            <th>{% translate "To" %}</th>  
+            <th>{% translate "status" %}</th>  
+        </tr>
+        
+      
+        
+
+
+    </thead>
+
+    <tbody id='appointmentTable'>
+        
+    {% for patient_appointment  in patient_appointments %}
+    
+    <tr>
+        
+        <td class="hi">
+            {{patient_appointment.doctor.user.get_full_name}}
+        </td> 
+        <td >
+            {{patient_appointment.doctor.specialty}}
+        </td>  
+        <td >
+            {{patient_appointment.doctor.address.name}},{{patient_appointment.doctor.address.city}}, {{patient_appointment.doctor.ex_address|default:""}}
+        </td>   
+        <td>
+            {{patient_appointment.adate}}
+        </td>
+        <td>
+            {{patient_appointment.time_from|time:'h:i A'}}
+        </td>
+        <td>
+            {{patient_appointment.time_to|time:'h:i A'}}
+
+        </td>
+        <td>
+            {{patient_appointment.get_status_display }}
+        </td>
+            
+
+        
+    </tr>
+
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% endif %}
+</div> 
+{% if  language_code == 'ar' %}
+    <script>
+  
+    $(document).ready(function () {
+        $('#HAppointmentTable').DataTable(
+            {
+                "language": {
+                    "infoFiltered":   "(تم تصفيته من  _MAX_ إجمالي المواعيد)",
+                    "info":           "إظهار _START_ إلى _END_ من _TOTAL_ مواعيد",
+                    "infoEmpty":      "إظهار 0 إلى 0 من 0 مواعيد",
+                    "zeroRecords":    "لا يوجد بيانات متطابقة ",
+                    "emptyTable":     "لا يوجد بيانات في الجدول",
+                    "lengthMenu":     "إظهار _MENU_ من المواعيد ",
+                    "loadingRecords": "تحميل...",
+                    "processing":     "",
+                    "search":         "ابحث :",
+                    "paginate": {
+                        "first":      "الأولى »",
+                        "last":       "« الأخيرة",
+                        "next":       "التالي",
+                        "previous":   "السابق"
+                    },
+                }
+            }
+        );
+      
+      });
+         </script>
+
+      {% else %}
+      <script>
+      $(document).ready(function () {
+        $('#HAppointmentTable').DataTable();
+      
+      });
+   
+    </script>
+    {% endif %}
+    
+  
+{% endblock %}
+

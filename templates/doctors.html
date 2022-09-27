@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+<br>
+<form   action="{% url 'doctors' %}" method="GET">
+  <div class="row justify-content-center mt-3">
+      <div class="col-md-3 p-1">
+        <div class="input-group ">
+    
+            <select name="Specialist" class="form-select" id="Specialist" aria-label="Example select with button addon">
+            <option selected value="0">{% translate 'Select Specialist'%}</option>
+            {% for specialty in Specialties %}
+            <option value={{specialty.id}}>{{specialty.name}}</option>
+            {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-2 p-1">
+        <div class="input-group  ">
+    
+            <select id="city" name="city" class="form-select" aria-label="Example select with button addon">
+            <option selected value="0" >{% translate 'Select city'%}</option>
+            {% for city in Cities %}
+            <option value={{city.id}}>{{city.name}}</option>
+            {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-2 p-1">
+        <div class="input-group ">
+    
+            <select id="area" name="area" disabled value="0" class="form-select"  aria-label="Example select with button addon">
+            <option value="0" selected> {% translate 'Select area'%}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-4 p-1">
+        <div class="input-group ">
+    
+           <input type="text" class="form-control" name="name" placeholder= "{% translate 'Or search by doctor name'%}" ></input>
+        </div>
+    </div>
+    <div class="col-md-1 p-1">
+      <input type="submit" class="btn btn-primary col" value=" {% translate 'Search'%} ">
+
+      
+        
+    </div>
+   
+
+  
+  </div>
+</form>
+<div class="row row-cols-1 row-cols-md-3 g-4 mt-2">
+{% for doctor in page_obj %}
+      
+   
+
+  <div class="col">
+    <div class="card h-100">
+      <img src="{{ doctor.image_profile.url }}" class="card-img-top" alt="">
+      <div class="card-body">
+        <h5 class="card-title"> {%translate 'Dr.'%} {{ doctor.user.get_full_name }}</h5>
+        <p class="card-text">{%translate 'specialist'%}: {{doctor.specialty}} </p>
+      </div>
+     
+      
+
+      {%if  request.user.is_authenticated and  not request.user.Info.is_doctor  and  not request.user.is_superuser %}
+      <div class="card-footer text-center " style="background-color:white;" >
+        <a href="{% url 'doctor_book' doctor.user.id %}" class="btn btn-primary"  >{% translate 'Book'%} </a>
+
+      </div>
+      {%endif%}
+
+     
+    </div>
+  </div>
+
+{% endfor %}
+</div>
+<br>
+
+<nav aria-label="..." >
+    <ul class="pagination justify-content-center" >
+      {% if page_obj.has_previous %}
+        
+      <li class="page-item " aria-current="page">
+        <a class="page-link" href="?page=1">&laquo; {% translate 'first' %}</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link"  href="?page={{ page_obj.previous_page_number }}">{% translate 'previous' %}</a>
+      </li>
+        {% else %}
+        <li class="page-item disabled" aria-current="page">
+          <a class="page-link" href="?page=1">&laquo; {% translate 'first' %}</a>
+        </li>
+        <li class="page-item disabled">
+          <a class="page-link" >{% translate 'previous' %}</a>
+        </li>
+        {% endif %}
+
+      {% if page_obj %}
+      <li class="page-item active" aria-current="page">
+        <a class="page-link" href="#">{{page_obj.number}}</a>
+      </li>
+
+      {% endif %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+        <a  class="page-link" href="?page={{ page_obj.next_page_number }}">{% translate 'next' %}</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{% translate 'last' %} &raquo;</a>
+        </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a  class="page-link" >{% translate 'next' %}</a>
+      </li>
+      <li class="page-item disabled">
+          <a class="page-link" >{% translate 'last' %} &raquo;</a>
+      </li>
+    {% endif %}
+    
+    </ul>
+  </nav>
+  
+  <script type="text/javascript" >
+  
+  function selectload (){
+  var value = $('#city').val();
+     if (value==0) {
+ 
+       $('#area').attr('disabled','disabled');
+       
+     }
+     else{
+       $('#area').removeAttr("disabled");
+       $('#area').val(0)
+       fetch('/get_modelAPI/'+ value,{
+     headers:{
+         'Accept': 'application/json',
+         'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+     },
+ })
+      .then(response => response.json() )
+      .then(data => {
+      let optionHTML = "<option  selected value = 0 >{% translate 'Select area'%}</option>";
+      for(let carea of data)
+         {
+          console.log(carea.fields.id)
+           optionHTML+='<option value="'+carea.pk+'">'+carea.fields.name+'</option>'
+         }
+         $('#area').html(optionHTML)
+      });
+     }
+    
+ }
+ 
+// $(document).ready(selectload);
+ 
+$("#city").on('change',selectload);
+ //$("#city").change(selectload); 
+
+ </script>
+
+  {% endblock  %}
